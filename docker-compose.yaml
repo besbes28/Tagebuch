@@ -1,0 +1,33 @@
+version: "3.5"
+services:
+  db:
+    container_name: db
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+      POSTGRES_DB: test_db
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+  
+  web:
+    container_name: web
+    build: .
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_HOST: db
+      POSTGRES_DB: test_db
+    ports:
+      - 8000:5000
+    links:
+      - db
+    depends_on:
+      - db
+
+volumes:
+    postgres:
